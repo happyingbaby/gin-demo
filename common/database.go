@@ -27,16 +27,17 @@ func InitDB() {
 		database,
 		charset)
 
-	fmt.Println(dsn)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// fmt.Println(dsn)
+	var err error
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database err : " + err.Error())
 	}
 
-	db.AutoMigrate(&models.User{})
+	DB.AutoMigrate(
+		&models.User{},
+	)
 
-	DB = db
-	// return db
 }
 
 func GetDB() *gorm.DB {

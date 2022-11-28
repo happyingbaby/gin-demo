@@ -15,7 +15,6 @@ import (
 )
 
 func Register(ctx *gin.Context) {
-	DB := common.GetDB()
 	//获取参数
 	name := ctx.PostForm("name")
 	telephone := ctx.PostForm("telephone")
@@ -36,7 +35,7 @@ func Register(ctx *gin.Context) {
 	}
 
 	//判断手机号是否存在
-	if isTelephoneExist(DB, telephone) {
+	if isTelephoneExist(common.DB, telephone) {
 		response.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "手机号已经存在")
 		return
 	}
@@ -53,7 +52,7 @@ func Register(ctx *gin.Context) {
 		Telephone: telephone,
 		Password:  string(hashPassword),
 	}
-	DB.Create(&newUser)
+	common.DB.Create(&newUser)
 
 	//返回结果
 	response.Success(ctx, nil, "注册成功")
@@ -67,7 +66,6 @@ func isTelephoneExist(db *gorm.DB, telephone string) bool {
 }
 
 func Login(ctx *gin.Context) {
-	DB := common.GetDB()
 	//获取参数
 	telephone := ctx.PostForm("telephone")
 	password := ctx.PostForm("password")
@@ -85,7 +83,7 @@ func Login(ctx *gin.Context) {
 
 	//判断手机号是否存在
 	var user models.User
-	DB.Where("telephone = ?", telephone).First(&user)
+	common.DB.Where("telephone = ?", telephone).First(&user)
 	if user.ID == 0 {
 		response.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "用户不存在")
 		return

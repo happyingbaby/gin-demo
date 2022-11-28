@@ -38,10 +38,9 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		//验证通过后获取claim 中的userId
 		userId := claims.UserId
-		DB := common.GetDB()
 		var user models.User
 
-		DB.First(&user, userId)
+		common.DB.First(&user, userId)
 
 		//用户是否存在
 		if user.ID == 0 {
