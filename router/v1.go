@@ -8,9 +8,15 @@ import (
 )
 
 func V1CollectRouter(r *gin.Engine) *gin.Engine {
-	r.POST("/api/auth/register", controllers.Register)
-	r.POST("/api/auth/login", controllers.Login)
-	r.GET("/api/auth/info", middleware.AuthMiddleware(), controllers.Info)
+
+	v1 := r.Group("/api/v1")
+
+	authRoute := v1.Group("auth")
+	{
+		authRoute.POST("/register", controllers.Register)
+		authRoute.POST("/login", controllers.Login)
+		authRoute.POST("/info", middleware.AuthMiddleware(), controllers.Info)
+	}
 
 	return r
 }
