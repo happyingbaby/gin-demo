@@ -3,8 +3,10 @@ package router
 import (
 	"jwtdemo/controllers"
 	"jwtdemo/middleware"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func V1CollectRouter(r *gin.Engine) *gin.Engine {
@@ -21,9 +23,10 @@ func V1CollectRouter(r *gin.Engine) *gin.Engine {
 	v1.Use(middleware.AuthMiddleware())
 
 	//upload file
-
+	uploadMemory := viper.GetString("upload.maxMemory")
+	mermory, _ := strconv.ParseInt(uploadMemory, 10, 64)
 	// 为 multipart forms 设置较低的内存限制 (默认是 32 MiB)
-	r.MaxMultipartMemory = 100 << 20 // 100 MiB
+	r.MaxMultipartMemory = mermory << 20 // 100 MiB
 	v1.POST("upload", controllers.UploadFile)
 
 	//add edit del detail book
