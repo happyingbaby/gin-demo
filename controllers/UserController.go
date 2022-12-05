@@ -14,33 +14,42 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserForm struct {
+	Name      string `json:"name"`
+	Telephone string `json:"telephone"`
+	Password  string `json:"password"`
+}
+
 func Register(ctx *gin.Context) {
-	//获取参数
-	name := ctx.PostForm("name")
-	telephone := ctx.PostForm("telephone")
-	password := ctx.PostForm("password")
+
+	var userForm UserForm
+	if err := ctx.ShouldBind(&userForm); err != nil {
+		response.Fail(ctx, gin.H{}, "获取参数错误！")
+		return
+	}
+
 	//数据验证
-	if len(telephone) != 11 {
+	if len(userForm.Telephone) != 11 {
 		response.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "手机号必须为11位")
 		return
 	}
 
-	if len(password) < 6 {
+	if len(userForm.Password) < 6 {
 		response.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "密码不能小于6位")
 		return
 	}
 
-	if len(name) == 0 {
-		name = utils.RandomString(10)
+	if len(userForm.Name) == 0 {
+		userForm.Name = utils.RandomString(10)
 	}
 
 	//判断手机号是否存在
-	if isTelephoneExist(common.DB, telephone) {
+	if isTelephoneExist(common.DB, userForm.Telephone) {
 		response.Response(ctx, http.StatusUnprocessableEntity, 422, nil, "手机号已经存在")
 		return
 	}
 
-	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(userForm.Password), bcrypt.DefaultCost)
 	if err != nil {
 		response.Response(ctx, http.StatusInternalServerError, 500, nil, "加密错误")
 		return
@@ -48,8 +57,8 @@ func Register(ctx *gin.Context) {
 	}
 	//创建用户
 	newUser := models.User{
-		Name:      name,
-		Telephone: telephone,
+		Name:      userForm.Name,
+		Telephone: userForm.Telephone,
 		Password:  string(hashPassword),
 	}
 	common.DB.Create(&newUser)

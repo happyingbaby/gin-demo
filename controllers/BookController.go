@@ -6,11 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddBook(ctx *gin.Context) {
+type AddBookForm struct {
+	BookName     string `json:"book_name"`
+	TestamentKey string `json:"testament_key"`
+	ShortName    string `json:"short_name"`
+}
 
+func AddBook(ctx *gin.Context) {
+	var addBookForm AddBookForm
 	//获取参数
-	// bookName := ctx.PostForm("book_name")
-	// bookDesc := ctx.PostForm("book_desc")
+	if err := ctx.ShouldBind(&addBookForm); err != nil {
+		response.Fail(ctx, gin.H{}, "获取参数错误！")
+		return
+	}
 
 	response.Success(ctx, gin.H{}, "获取成功")
+}
+
+func ListBook(ctx *gin.Context) {
+
 }

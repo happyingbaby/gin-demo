@@ -27,7 +27,6 @@ func InitDB() {
 		database,
 		charset)
 
-	// fmt.Println(dsn)
 	var err error
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -36,6 +35,9 @@ func InitDB() {
 
 	DB.AutoMigrate(
 		&models.User{},
+		&models.Book{},
+		&models.Chapter{},
+		&models.Evangelize{},
 	)
 
 }

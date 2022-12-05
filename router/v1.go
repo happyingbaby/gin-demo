@@ -32,7 +32,7 @@ func V1CollectRouter(r *gin.Engine) *gin.Engine {
 	//add edit del detail book
 	bookRoute := v1.Group("book")
 	{
-		bookRoute.POST("list", controllers.AddBook)
+		bookRoute.POST("add", controllers.AddBook)
 	}
 
 	return r
